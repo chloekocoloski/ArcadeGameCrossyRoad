@@ -2,10 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 
 
-    public class CrossyRoad implements Runnable, KeyListener {
+    public class CrossyRoad implements Runnable, KeyListener, MouseListener {
         @Override
         public void keyTyped(KeyEvent e) {
         }
@@ -79,8 +81,8 @@ import java.awt.image.BufferStrategy;
         private Astronaut astro;
         private Astronaut astro2;
 
-        Astronaut [] astronautsArray = new Astronaut[10];
 
+        Astronaut [] astronautsArray = new Astronaut[0];
 
 
         public static void main(String[] args) {
@@ -89,16 +91,16 @@ import java.awt.image.BufferStrategy;
         }
 
         public CrossyRoad() {
-
             setUpGraphics();
 
-
+            backgroundPic = Toolkit.getDefaultToolkit().getImage("Background.png");
             astroPic = Toolkit.getDefaultToolkit().getImage("astronaut.png");
             astro2Pic = Toolkit.getDefaultToolkit().getImage("astronaut2.png");
-            backgroundPic = Toolkit.getDefaultToolkit().getImage("no picture rn");
 
-            astro = new Astronaut(200,500);
-            astro2 = new Astronaut(500,600);
+            astro = new Astronaut(120,600);
+            astro2 = new Astronaut(0,350);
+
+            astro2.dy = 0;
 
             for(int x = 0; x <astronautsArray.length; x++) {
                 astronautsArray[x] = new Astronaut((int) (Math.random()* 900), (int)(Math.random()* 600));
@@ -127,16 +129,15 @@ import java.awt.image.BufferStrategy;
 
         public void collisions(){
             if(astro.rec.intersects(astro2.rec) && astro.isCrashing == false && astro.isAlive && astro2.isAlive){
-                System.out.println("explosion!!!!!!!");
                 astro.dx = -astro.dx;
                 astro.dy = -astro.dy;
                 astro2.dx = -astro.dx;
                 astro2.dy = -astro2.dy;
                 astro2.isAlive = false;
-                astro.width = astro.width + 30;
-                astro.height = astro.height + 30;
-                astro2.dx = astro2.dx + 30;
-                astro2.dy = astro2.dy + 30;
+                astro.width = astro.width + 0;
+                astro.height = astro.height + 0;
+                astro2.dx = astro2.dx + 0;
+                astro2.dy = astro2.dy + 0;
                 astro.isCrashing = true;
             }
 
@@ -146,7 +147,6 @@ import java.awt.image.BufferStrategy;
 
             for(int b = 0; b < astronautsArray.length; b++){
                 if(astro.rec.intersects(astronautsArray[b].rec)){
-                    System.out.println("crashing");
                 }
             }
 
@@ -180,7 +180,7 @@ import java.awt.image.BufferStrategy;
             frame.pack();
             frame.setResizable(false);
             frame.setVisible(true);
-
+            canvas.addMouseListener(this);
             canvas.createBufferStrategy(2);
             bufferStrategy = canvas.getBufferStrategy();
             canvas.requestFocus();
@@ -192,25 +192,43 @@ import java.awt.image.BufferStrategy;
         private void render() {
             Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
             g.clearRect(0, 0, WIDTH, HEIGHT);
-
             g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
-
             g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
-
-            if(astro2.isAlive == true) {
-                g.drawImage(astro2Pic, astro2.xpos, astro2.ypos, astro2.width, astro2.height, null);
-            }
+            g.drawImage(astro2Pic, astro2.xpos, astro2.ypos, astro2.width, astro2.height, null);
 
             for(int l = 0; l < astronautsArray.length; l++){
                 g.drawImage(astroPic, astronautsArray[l].xpos, astro.ypos, astro.width, astro.height, null);
-
             }
 
 
             g.dispose();
-
             bufferStrategy.show();
         }
 
+        @Override
+        public void mouseClicked(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            System.out.println("x "+e.getX());
+            System.out.println("y "+e.getY());
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
     }
 

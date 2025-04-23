@@ -5,11 +5,10 @@ import java.awt.*;
  */
 public class Astronaut {
 
-    //VARIABLE DECLARATION SECTION
-    //Here's where you state which variables you are going to use.
-    public String name;                //holds the name of the hero
-    public int xpos;                //the x position
-    public int ypos;                //the y position
+
+    public String name;
+    public int xpos;
+    public int ypos;
     public int dx;                    //the speed of the hero in the x direction
     public int dy;                    //the speed of the hero in the y direction
     public int width;
@@ -34,10 +33,10 @@ public class Astronaut {
     public Astronaut(int pXpos, int pYpos) {
         xpos = pXpos;
         ypos = pYpos;
-        dx = 8; //direction and speed, left and right
-        dy = 8; //slope
-        width = 100;
-        height = 100;
+        dx = 3; //direction and speed, left and right
+        dy = 3; //slope
+        width = 75;
+        height = 75;
         isAlive = true;
         rec = new Rectangle(xpos, ypos, width, height);
         isCrashing = false;
