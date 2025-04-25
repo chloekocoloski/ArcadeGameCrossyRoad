@@ -22,26 +22,26 @@ import java.awt.image.BufferStrategy;
             //moving up
             if(e.getKeyCode() == 38){
                 System.out.println("up");
-                astro.up = true;
-                astro.down = false;
+                raceCar.up = true;
+                raceCar.down = false;
             }
             //moving down
             if(e.getKeyCode() == 40){
                 System.out.println("down");
-                astro.down = true;
-                astro.up = false;
+                raceCar.down = true;
+                raceCar.up = false;
             }
             //moving left
             if(e.getKeyCode() == 37){
                 System.out.println("left");
-                astro.left = true;
-                astro.right = false;
+                raceCar.left = true;
+                raceCar.right = false;
             }
             //moving right
             if(e.getKeyCode() == 39){
                 System.out.println("right");
-                astro.right = true;
-                astro.left = false;
+                raceCar.right = true;
+                raceCar.left = false;
             }
         }
 
@@ -52,19 +52,19 @@ import java.awt.image.BufferStrategy;
             System.out.println(e.getKeyChar());
             //moving up
             if(e.getKeyCode() == 38){
-                astro.up = false;
+                raceCar.up = false;
             }
             //moving down
             if(e.getKeyCode() == 40){
-                astro.down = false;
+                raceCar.down = false;
             }
             //moving left
             if(e.getKeyCode() == 37){
-                astro.left = false;
+                raceCar.left = false;
             }
             //moving right
             if(e.getKeyCode() == 39){
-                astro.right = false;
+                raceCar.right = false;
             }
         }
 
@@ -76,45 +76,44 @@ import java.awt.image.BufferStrategy;
         public JPanel panel;
 
         public BufferStrategy bufferStrategy;
-        public Image astroPic;
-        public Image astro2Pic;
+        public Image firePic;
         public Image backgroundPic;
+        public Image raceCarPic;
 
-        private Astronaut astro;
-        private Astronaut astro2;
+        private item raceCar;
+        private item fire;
 
 
-        Astronaut [] astronautsArray = new Astronaut[9];
+        item [] raceCarArray = new item[0];//raceCar
+        item[] fireArray =new item[20];
 
 
         public static void main(String[] args) {
             CrossyRoad ex = new CrossyRoad();
             new Thread(ex).start();
-            for (int i = 0; i < 4; i++) { // 4 additional astro2-like astronauts
-                int startX = (int)(Math.random() * 900);
-                int startY = (int)(Math.random() * 650);
-                Astronaut newAstro = new Astronaut(startX, startY);
 
-                newAstro.dy = 0; // only move side to side
-                newAstro.dx = (Math.random() > 0.5) ? 2 + i : -(2 + i); // variety in speed + direction
-            }
         }
 
         public CrossyRoad() {
             setUpGraphics();
 
             backgroundPic = Toolkit.getDefaultToolkit().getImage("Background.png");
-            astroPic = Toolkit.getDefaultToolkit().getImage("astronaut.png");
-            astro2Pic = Toolkit.getDefaultToolkit().getImage("astronaut2.png");
+            Image raceCarPic = Toolkit.getDefaultToolkit().getImage("racecar.png");
+            firePic = Toolkit.getDefaultToolkit().getImage("fire.png");
             Image newBackgroundPic = Toolkit.getDefaultToolkit().getImage(getClass().getResource("newBackground.webp"));
 
-            astro = new Astronaut(120,600);
-            astro2 = new Astronaut(0,350);
+            raceCar = new item (120,600);
+            fire = new item (0,350);
 
-            astro2.dy = 0;
 
-            for(int x = 0; x <astronautsArray.length; x++) {
-                astronautsArray[x] = new Astronaut((int) (Math.random()* 900), (int)(Math.random()* 600));
+            fire.dy = 0;
+
+            for(int x = 0; x < raceCarArray.length; x++) {
+                raceCarArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
+            }
+
+            for(int x = 0; x < fireArray.length; x++) {
+                fireArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
             }
         }
 
@@ -130,52 +129,60 @@ import java.awt.image.BufferStrategy;
 
         public void moveThings() {
             collisions();
-            astro.bounce();
-            astro2.wrap();
+            raceCar.bounce();
+            fire.wrap();
 
 
-            for(int y = 0; y < astronautsArray.length; y++){
-                astronautsArray[y].wrap();
+            for(int y = 0; y < raceCarArray.length; y++){
+                raceCarArray[y].wrap();
+
+            }
+
+            for(int y = 0; y < fireArray.length; y++){
+               fireArray[y].wrap();
+
             }
 
         }
 
 
         public void collisions(){
-            if(astro.rec.intersects(astro2.rec) && astro.isCrashing == false && astro.isAlive && astro2.isAlive){
-                astro.dx = -astro.dx;
-                astro.dy = -astro.dy;
-                astro2.dx = -astro.dx;
-                astro2.dy = -astro2.dy;
-                astro2.isAlive = false;
-//                astro.width = astro.width + 0;
-//                astro.height = astro.height + 0;
-//                astro2.dx = astro2.dx + 0;
-//                astro2.dy = astro2.dy + 0;
-                astro.isCrashing = true;
+            if(raceCar.rec.intersects(fire.rec) && raceCar.isCrashing == false && raceCar.isAlive && fire.isAlive){
+                raceCar.dx = -raceCar.dx;
+                raceCar.dy = -raceCar.dy;
+                fire.dx = -raceCar.dx;
+                fire.dy = -fire.dy;
+                fire.isAlive = false;
+//
+                raceCar.isCrashing = true;
 
             }
 
-            if(!astro.rec.intersects(astro2.rec)){
-                astro.isCrashing = false;
+            if(!raceCar.rec.intersects(fire.rec)){
+                raceCar.isCrashing = false;
             }
 
-            for(int b = 0; b < astronautsArray.length; b++){
-                if(astro.rec.intersects(astronautsArray[b].rec)){
+            for(int b = 0; b < raceCarArray.length; b++){
+                if(raceCar.rec.intersects(raceCarArray[b].rec)){
+                }
+
+                for(int c = 0; c < fireArray.length; c++) {
+                    if (fire.rec.intersects(raceCarArray[c].rec)) {
+                    }
                 }
             }
 
-            Astronaut[] astro2 = new Astronaut[5];  // change 5 to however many you want
+            item[] fire = new item[1];
 
-            for (int i = 0; i < astro2.length; i++) {
+            for (int i = 0; i < fire.length; i++) {
                 int startX = (int)(Math.random() * 900);     // random starting x position
                 int startY = (int)(Math.random() * 650);     // random starting y position
 
-                astro2[i] = new Astronaut(startX, startY);
+                fire[i] = new item (startX, startY);
 
                 // Make them move left or right only
-                astro2[i].dy = 0; // no vertical movement
-                astro2[i].dx = (Math.random() > 0.5) ? 2 + i : -(2 + i); // diff speeds & directions
+                fire[i].dy = (Math.random() > 20) ? 7 + i : -(1 + i);;
+                fire[i].dx = (Math.random() > 0.5) ? 2 + i : -(2 + i); // diff speeds & directions
             }
 
 
@@ -222,24 +229,32 @@ import java.awt.image.BufferStrategy;
             g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
 
             // only draw astro if it should be shown
+
             if (showAstro) {
-                g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
+                g.drawImage(raceCarPic, raceCar.xpos, raceCar.ypos, raceCar.width, raceCar.height, null);
             }
 
             // always draw astro2
-            g.drawImage(astro2Pic, astro2.xpos, astro2.ypos, astro2.width, astro2.height, null);
+            g.drawImage(firePic, fire.xpos, fire.ypos, fire.width, fire.height, null);
 
-            // draw  rest of the astronaut array
-            for (int l = 0; l < astronautsArray.length; l++) {
-                g.drawImage(astroPic, astronautsArray[l].xpos, astro.ypos, astro.width, astro.height, null);
+            // draw  rest of the item array
+            for (int l = 0; l < raceCarArray.length; l++) {
+                g.drawImage(raceCarPic, raceCarArray[l].xpos, raceCar.ypos, raceCar.width, raceCar.height, null);
+            }
+
+            for (int l = 0; l < fireArray.length; l++) {
+                g.drawImage(firePic, fireArray[l].xpos, fire.ypos, fire.width, fire.height, null);
             }
 
             // collision: once collided, stop showing astro
-            if (astro.rec.intersects(astro2.rec)) {
+            if (raceCar.rec.intersects(fire.rec)) {
                 showAstro = false;
                 backgroundPic = Toolkit.getDefaultToolkit().getImage("newBackground.webp");
 
             }
+            raceCarPic = Toolkit.getDefaultToolkit().getImage("racecar.png");
+
+
 
 //            for (int i = 0; i < astro2.length; i++) {
 //                g.drawImage(astro2Pic, astro2[i].xpos, astro[i].ypos, astro2[i].width, astro2[i].height, null);
