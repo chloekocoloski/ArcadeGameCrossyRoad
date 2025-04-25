@@ -7,7 +7,9 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferStrategy;
 
 
+
     public class CrossyRoad implements Runnable, KeyListener, MouseListener {
+
         @Override
         public void keyTyped(KeyEvent e) {
         }
@@ -82,12 +84,20 @@ import java.awt.image.BufferStrategy;
         private Astronaut astro2;
 
 
-        Astronaut [] astronautsArray = new Astronaut[0];
+        Astronaut [] astronautsArray = new Astronaut[9];
 
 
         public static void main(String[] args) {
             CrossyRoad ex = new CrossyRoad();
             new Thread(ex).start();
+            for (int i = 0; i < 4; i++) { // 4 additional astro2-like astronauts
+                int startX = (int)(Math.random() * 900);
+                int startY = (int)(Math.random() * 650);
+                Astronaut newAstro = new Astronaut(startX, startY);
+
+                newAstro.dy = 0; // only move side to side
+                newAstro.dx = (Math.random() > 0.5) ? 2 + i : -(2 + i); // variety in speed + direction
+            }
         }
 
         public CrossyRoad() {
@@ -96,6 +106,7 @@ import java.awt.image.BufferStrategy;
             backgroundPic = Toolkit.getDefaultToolkit().getImage("Background.png");
             astroPic = Toolkit.getDefaultToolkit().getImage("astronaut.png");
             astro2Pic = Toolkit.getDefaultToolkit().getImage("astronaut2.png");
+            Image newBackgroundPic = Toolkit.getDefaultToolkit().getImage(getClass().getResource("newBackground.webp"));
 
             astro = new Astronaut(120,600);
             astro2 = new Astronaut(0,350);
@@ -122,10 +133,13 @@ import java.awt.image.BufferStrategy;
             astro.bounce();
             astro2.wrap();
 
+
             for(int y = 0; y < astronautsArray.length; y++){
                 astronautsArray[y].wrap();
             }
+
         }
+
 
         public void collisions(){
             if(astro.rec.intersects(astro2.rec) && astro.isCrashing == false && astro.isAlive && astro2.isAlive){
@@ -134,11 +148,12 @@ import java.awt.image.BufferStrategy;
                 astro2.dx = -astro.dx;
                 astro2.dy = -astro2.dy;
                 astro2.isAlive = false;
-                astro.width = astro.width + 0;
-                astro.height = astro.height + 0;
-                astro2.dx = astro2.dx + 0;
-                astro2.dy = astro2.dy + 0;
+//                astro.width = astro.width + 0;
+//                astro.height = astro.height + 0;
+//                astro2.dx = astro2.dx + 0;
+//                astro2.dy = astro2.dy + 0;
                 astro.isCrashing = true;
+
             }
 
             if(!astro.rec.intersects(astro2.rec)){
@@ -150,6 +165,18 @@ import java.awt.image.BufferStrategy;
                 }
             }
 
+            Astronaut[] astro2 = new Astronaut[5];  // change 5 to however many you want
+
+            for (int i = 0; i < astro2.length; i++) {
+                int startX = (int)(Math.random() * 900);     // random starting x position
+                int startY = (int)(Math.random() * 650);     // random starting y position
+
+                astro2[i] = new Astronaut(startX, startY);
+
+                // Make them move left or right only
+                astro2[i].dy = 0; // no vertical movement
+                astro2[i].dx = (Math.random() > 0.5) ? 2 + i : -(2 + i); // diff speeds & directions
+            }
 
 
         }
@@ -167,7 +194,6 @@ import java.awt.image.BufferStrategy;
             panel = (JPanel) frame.getContentPane();
             panel.setPreferredSize(new Dimension(WIDTH, HEIGHT));
             panel.setLayout(null);
-
 
             canvas = new Canvas();
             canvas.setBounds(0, 0, WIDTH, HEIGHT);
@@ -187,18 +213,38 @@ import java.awt.image.BufferStrategy;
             System.out.println("DONE graphic setup");
 
         }
+        boolean showAstro = true;
 
 
         private void render() {
             Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
             g.clearRect(0, 0, WIDTH, HEIGHT);
             g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
-            g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
+
+            // only draw astro if it should be shown
+            if (showAstro) {
+                g.drawImage(astroPic, astro.xpos, astro.ypos, astro.width, astro.height, null);
+            }
+
+            // always draw astro2
             g.drawImage(astro2Pic, astro2.xpos, astro2.ypos, astro2.width, astro2.height, null);
 
-            for(int l = 0; l < astronautsArray.length; l++){
+            // draw  rest of the astronaut array
+            for (int l = 0; l < astronautsArray.length; l++) {
                 g.drawImage(astroPic, astronautsArray[l].xpos, astro.ypos, astro.width, astro.height, null);
             }
+
+            // collision: once collided, stop showing astro
+            if (astro.rec.intersects(astro2.rec)) {
+                showAstro = false;
+                backgroundPic = Toolkit.getDefaultToolkit().getImage("newBackground.webp");
+
+            }
+
+//            for (int i = 0; i < astro2.length; i++) {
+//                g.drawImage(astro2Pic, astro2[i].xpos, astro[i].ypos, astro2[i].width, astro2[i].height, null);
+//            }
+
 
 
             g.dispose();

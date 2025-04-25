@@ -22,6 +22,7 @@ public class Astronaut {
     public boolean left;
 
 
+
     // METHOD DEFINITION SECTION
 
     // Constructor Definition
@@ -31,6 +32,8 @@ public class Astronaut {
     //This is a SECOND constructor that takes 3 parameters.  This allows us to specify the hero's name and position when we build it.
     // if you put in a String, an int and an int the program will use this constructor instead of the one above.
     public Astronaut(int pXpos, int pYpos) {
+
+
         xpos = pXpos;
         ypos = pYpos;
         dx = 3; //direction and speed, left and right
