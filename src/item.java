@@ -122,7 +122,6 @@ public class item {
         }
 
         //hits the west wall
-
         if (xpos < 0) {
             xpos = 950;
         }

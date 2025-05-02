@@ -76,6 +76,7 @@ import java.awt.image.BufferStrategy;
         public JPanel panel;
 
         public BufferStrategy bufferStrategy;
+        public BufferStrategy dxbufferStrategy;
         public Image firePic;
         public Image backgroundPic;
         public Image raceCarPic;
@@ -85,7 +86,7 @@ import java.awt.image.BufferStrategy;
 
 
         item [] raceCarArray = new item[0];//raceCar
-        item[] fireArray =new item[20];
+        item[] fireArray =new item[5];
 
 
         public static void main(String[] args) {
@@ -103,17 +104,16 @@ import java.awt.image.BufferStrategy;
             Image newBackgroundPic = Toolkit.getDefaultToolkit().getImage(getClass().getResource("newBackground.webp"));
 
             raceCar = new item (120,600);
-            fire = new item (0,350);
 
 
-            fire.dy = 0;
 
             for(int x = 0; x < raceCarArray.length; x++) {
                 raceCarArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
             }
 
             for(int x = 0; x < fireArray.length; x++) {
-                fireArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
+                    fireArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
+
             }
         }
 
@@ -153,7 +153,6 @@ import java.awt.image.BufferStrategy;
                 fire.dx = -raceCar.dx;
                 fire.dy = -fire.dy;
                 fire.isAlive = false;
-//
                 raceCar.isCrashing = true;
 
             }
@@ -180,9 +179,9 @@ import java.awt.image.BufferStrategy;
 
                 fire[i] = new item (startX, startY);
 
-                // Make them move left or right only
-                fire[i].dy = (Math.random() > 20) ? 7 + i : -(1 + i);;
-                fire[i].dx = (Math.random() > 0.5) ? 2 + i : -(2 + i); // diff speeds & directions
+                // Make them move left or right
+                fire[i].dy = (Math.random() > 9) ? 2 + i : (1 + i);
+                fire[i].dx = (Math.random() > 0.5) ? 2 + i : (2 + i); // diff speeds & directions
             }
 
 
@@ -228,13 +227,13 @@ import java.awt.image.BufferStrategy;
             g.clearRect(0, 0, WIDTH, HEIGHT);
             g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
 
-            // only draw astro if it should be shown
+            // only draw fire if it should be shown
 
             if (showAstro) {
                 g.drawImage(raceCarPic, raceCar.xpos, raceCar.ypos, raceCar.width, raceCar.height, null);
             }
 
-            // always draw astro2
+            // always draw fire
             g.drawImage(firePic, fire.xpos, fire.ypos, fire.width, fire.height, null);
 
             // draw  rest of the item array
@@ -243,10 +242,10 @@ import java.awt.image.BufferStrategy;
             }
 
             for (int l = 0; l < fireArray.length; l++) {
-                g.drawImage(firePic, fireArray[l].xpos, fire.ypos, fire.width, fire.height, null);
+                g.drawImage(firePic, fireArray[l].xpos, fireArray[l].ypos, fireArray[l].width, fireArray[l].height, null);
             }
 
-            // collision: once collided, stop showing astro
+            // collision: once collided, stop showing fire
             if (raceCar.rec.intersects(fire.rec)) {
                 showAstro = false;
                 backgroundPic = Toolkit.getDefaultToolkit().getImage("newBackground.webp");
