@@ -74,18 +74,13 @@ import java.awt.image.BufferStrategy;
         public JFrame frame;
         public Canvas canvas;
         public JPanel panel;
-
         public BufferStrategy bufferStrategy;
         public BufferStrategy dxbufferStrategy;
         public Image firePic;
         public Image backgroundPic;
         public Image raceCarPic;
-
         private item raceCar;
-        private item fire;
 
-
-        item [] raceCarArray = new item[0];//raceCar
         item[] fireArray =new item[10];
 
 
@@ -95,21 +90,16 @@ import java.awt.image.BufferStrategy;
 
         }
 
+
         public CrossyRoad() {
             setUpGraphics();
 
-            backgroundPic = Toolkit.getDefaultToolkit().getImage("Background.png");
-            Image raceCarPic = Toolkit.getDefaultToolkit().getImage("racecar.png");
-            firePic = Toolkit.getDefaultToolkit().getImage("fire.png");
-            Image newBackgroundPic = Toolkit.getDefaultToolkit().getImage(getClass().getResource("newBackground.webp"));
-
+            backgroundPic = Toolkit.getDefaultToolkit().getImage("field.png");
+            raceCarPic = Toolkit.getDefaultToolkit().getImage("net.webp");
+            firePic = Toolkit.getDefaultToolkit().getImage("woodstock.png");
             raceCar = new item (120,600);
 
 
-
-            for(int x = 0; x < raceCarArray.length; x++) {
-                raceCarArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
-            }
 
             for(int x = 0; x < fireArray.length; x++) {
                     fireArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
@@ -118,7 +108,6 @@ import java.awt.image.BufferStrategy;
         }
 
         public void run() {
-            //for the moment we will loop things forever.
             while (true) {
                 moveThings();  //move all the game objects
                 render();  // paint the graphics
@@ -135,11 +124,6 @@ import java.awt.image.BufferStrategy;
             }
 
 
-            for(int y = 0; y < raceCarArray.length; y++){
-                raceCarArray[y].wrap();
-
-            }
-
             for(int y = 0; y < fireArray.length; y++){
                fireArray[y].wrap();
 
@@ -150,13 +134,14 @@ import java.awt.image.BufferStrategy;
 
         public void collisions(){
             for(int x = 0; x < fireArray.length; x++) {
-                if (raceCar.rec.intersects(fireArray[x].rec) && raceCar.isCrashing == false && raceCar.isAlive && fire.isAlive) {
+                if (raceCar.rec.intersects(fireArray[x].rec) && raceCar.isCrashing == false && raceCar.isAlive && fireArray[x].isAlive) {
                     raceCar.dx = -raceCar.dx;
                     raceCar.dy = -raceCar.dy;
                     fireArray[x].dx = -raceCar.dx;
                     fireArray[x].dy = -fireArray[x].dy;
                     fireArray[x].isAlive = false;
-                    raceCar.isCrashing = true;
+                    showWoodstock = false;
+
 
                 }
             }
@@ -165,29 +150,6 @@ import java.awt.image.BufferStrategy;
                 if (!raceCar.rec.intersects(fireArray[x].rec)) {
                     raceCar.isCrashing = false;
                 }
-            }
-
-            for(int b = 0; b < raceCarArray.length; b++){
-                if(raceCar.rec.intersects(raceCarArray[b].rec)){
-                }
-
-                for(int c = 0; c < fireArray.length; c++) {
-                    if (fire.rec.intersects(raceCarArray[c].rec)) {
-                    }
-                }
-            }
-
-            item[] fire = new item[1];
-
-            for (int i = 0; i < fire.length; i++) {
-                int startX = (int)(Math.random() * 900);     // random starting x position
-                int startY = (int)(Math.random() * 650);     // random starting y position
-
-                fire[i] = new item (startX, startY);
-
-                // Make them move left or right
-                fire[i].dy = (Math.random() > 9) ? 2 + i : (1 + i);
-                fire[i].dx = (Math.random() > 0.5) ? 2 + i : (2 + i); // diff speeds & directions
             }
 
 
@@ -225,47 +187,31 @@ import java.awt.image.BufferStrategy;
             System.out.println("DONE graphic setup");
 
         }
-        boolean showAstro = true;
+        boolean showWoodstock = true;
 
 
         private void render() {
             Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
             g.clearRect(0, 0, WIDTH, HEIGHT);
             g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
+            g.drawImage(raceCarPic, 0, 0, WIDTH, HEIGHT, null);
 
-            // only draw fire if it should be shown
 
-            if (showAstro) {
-                g.drawImage(raceCarPic, raceCar.xpos, raceCar.ypos, raceCar.width, raceCar.height, null);
-            }
-
-            // always draw fire
-          //  g.drawImage(firePic, fire.xpos, fire.ypos, fire.width, fire.height, null);
-
-            // draw  rest of the item array
-            for (int l = 0; l < raceCarArray.length; l++) {
-                g.drawImage(raceCarPic, raceCarArray[l].xpos, raceCar.ypos, raceCar.width, raceCar.height, null);
+            for(int x = 0; x < fireArray.length; x++) {
+                if (showWoodstock){
+                    g.drawImage(firePic, fireArray[x].xpos, fireArray[x].ypos, fireArray[x].width, fireArray[x].height, null);
+                }
             }
 
             for (int l = 0; l < fireArray.length; l++) {
                 g.drawImage(firePic, fireArray[l].xpos, fireArray[l].ypos, fireArray[l].width, fireArray[l].height, null);
             }
 
-            // collision: once collided, stop showing fire
-//            if (raceCar.rec.intersects(fire.rec)) {
-//                showAstro = false;
-//                backgroundPic = Toolkit.getDefaultToolkit().getImage("newBackground.webp");
-//
-//            }
-            raceCarPic = Toolkit.getDefaultToolkit().getImage("racecar.png");
-
-
-
-//            for (int i = 0; i < astro2.length; i++) {
-//                g.drawImage(astro2Pic, astro2[i].xpos, astro[i].ypos, astro2[i].width, astro2[i].height, null);
-//            }
-
-
+            for(int x = 0; x < fireArray.length; x++) {
+                if (raceCar.rec.intersects(fireArray[x].rec)) {
+                    showWoodstock = false;
+                }
+            }
 
             g.dispose();
             bufferStrategy.show();
