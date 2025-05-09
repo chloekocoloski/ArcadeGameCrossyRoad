@@ -22,26 +22,26 @@ import java.awt.image.BufferStrategy;
             //moving up
             if(e.getKeyCode() == 38){
                 System.out.println("up");
-                raceCar.up = true;
-                raceCar.down = false;
+                snoopy.up = true;
+                snoopy.down = false;
             }
             //moving down
             if(e.getKeyCode() == 40){
                 System.out.println("down");
-                raceCar.down = true;
-                raceCar.up = false;
+                snoopy.down = true;
+                snoopy.up = false;
             }
             //moving left
             if(e.getKeyCode() == 37){
                 System.out.println("left");
-                raceCar.left = true;
-                raceCar.right = false;
+                snoopy.left = true;
+                snoopy.right = false;
             }
             //moving right
             if(e.getKeyCode() == 39){
                 System.out.println("right");
-                raceCar.right = true;
-                raceCar.left = false;
+                snoopy.right = true;
+                snoopy.left = false;
             }
         }
 
@@ -52,19 +52,19 @@ import java.awt.image.BufferStrategy;
             System.out.println(e.getKeyChar());
             //moving up
             if(e.getKeyCode() == 38){
-                raceCar.up = false;
+                snoopy.up = false;
             }
             //moving down
             if(e.getKeyCode() == 40){
-                raceCar.down = false;
+                snoopy.down = false;
             }
             //moving left
             if(e.getKeyCode() == 37){
-                raceCar.left = false;
+                snoopy.left = false;
             }
             //moving right
             if(e.getKeyCode() == 39){
-                raceCar.right = false;
+                snoopy.right = false;
             }
         }
 
@@ -76,12 +76,12 @@ import java.awt.image.BufferStrategy;
         public JPanel panel;
         public BufferStrategy bufferStrategy;
         public BufferStrategy dxbufferStrategy;
-        public Image firePic;
+        public Image woodstockPic;
         public Image backgroundPic;
-        public Image raceCarPic;
-        private item raceCar;
+        public Image snoopyPic;
+        private item snoopy;
 
-        item[] fireArray =new item[10];
+        item[] woodstockArray =new item[10];
 
 
         public static void main(String[] args) {
@@ -95,15 +95,15 @@ import java.awt.image.BufferStrategy;
             setUpGraphics();
 
             backgroundPic = Toolkit.getDefaultToolkit().getImage("field.png");
-            raceCarPic = Toolkit.getDefaultToolkit().getImage("net.webp");
-            firePic = Toolkit.getDefaultToolkit().getImage("woodstock.png");
-            raceCar = new item (120,600);
+            snoopyPic = Toolkit.getDefaultToolkit().getImage("snoopy.png");
+            woodstockPic = Toolkit.getDefaultToolkit().getImage("woodstock.png");
+            snoopy = new item (450,500);
 
 
 
-            for(int x = 0; x < fireArray.length; x++) {
-                    fireArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
-                    fireArray[x].dy = 0;
+            for(int x = 0; x < woodstockArray.length; x++) {
+                    woodstockArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
+                    woodstockArray[x].dy = 0;
             }
         }
 
@@ -118,14 +118,14 @@ import java.awt.image.BufferStrategy;
 
         public void moveThings() {
             collisions();
-            raceCar.bounce();
-            for(int x = 0; x < fireArray.length; x++) {
-                fireArray[x].wrap();
+            snoopy.bounce();
+            for(int x = 0; x < woodstockArray.length; x++) {
+                woodstockArray[x].wrap();
             }
 
 
-            for(int y = 0; y < fireArray.length; y++){
-               fireArray[y].wrap();
+            for(int y = 0; y < woodstockArray.length; y++){
+               woodstockArray[y].wrap();
 
             }
 
@@ -133,25 +133,19 @@ import java.awt.image.BufferStrategy;
 
 
         public void collisions(){
-            for(int x = 0; x < fireArray.length; x++) {
-                if (raceCar.rec.intersects(fireArray[x].rec) && raceCar.isCrashing == false && raceCar.isAlive && fireArray[x].isAlive) {
-                    raceCar.dx = -raceCar.dx;
-                    raceCar.dy = -raceCar.dy;
-                    fireArray[x].dx = -raceCar.dx;
-                    fireArray[x].dy = -fireArray[x].dy;
-                    fireArray[x].isAlive = false;
-                    showWoodstock = false;
+            for(int x = 0; x < woodstockArray.length; x++) {
+                if (snoopy.rec.intersects(woodstockArray[x].rec) && snoopy.isAlive && woodstockArray[x].isAlive) {
+//                    snoopy.dx = -snoopy.dx;
+//                    snoopy.dy = -snoopy.dy;
+                    snoopy.dx = snoopy.dx + 5;
+                    snoopy.dy = snoopy.dy + 5;
+                    woodstockArray[x].dx = 0;
+                    woodstockArray[x].dy = 0;
+                    woodstockArray[x].isAlive = false;
 
 
                 }
             }
-
-            for(int x = 0; x < fireArray.length; x++) {
-                if (!raceCar.rec.intersects(fireArray[x].rec)) {
-                    raceCar.isCrashing = false;
-                }
-            }
-
 
         }
 
@@ -194,21 +188,22 @@ import java.awt.image.BufferStrategy;
             Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
             g.clearRect(0, 0, WIDTH, HEIGHT);
             g.drawImage(backgroundPic, 0, 0, WIDTH, HEIGHT, null);
-            g.drawImage(raceCarPic, 0, 0, WIDTH, HEIGHT, null);
+            g.drawImage(snoopyPic, snoopy.xpos, snoopy.ypos, snoopy.width, snoopy.height, null);
 
 
-            for(int x = 0; x < fireArray.length; x++) {
-                if (showWoodstock){
-                    g.drawImage(firePic, fireArray[x].xpos, fireArray[x].ypos, fireArray[x].width, fireArray[x].height, null);
+
+            for(int x = 0; x < woodstockArray.length; x++) {
+                if (woodstockArray[x].isAlive){
+                    g.drawImage(woodstockPic, woodstockArray[x].xpos, woodstockArray[x].ypos, woodstockArray[x].width, woodstockArray[x].height, null);
                 }
             }
 
-            for (int l = 0; l < fireArray.length; l++) {
-                g.drawImage(firePic, fireArray[l].xpos, fireArray[l].ypos, fireArray[l].width, fireArray[l].height, null);
-            }
+//            for (int l = 0; l < woodstockArray.length; l++) {
+//                g.drawImage(woodstockPic, woodstockArray[l].xpos, woodstockArray[l].ypos, woodstockArray[l].width, woodstockArray[l].height, null);
+//            }
 
-            for(int x = 0; x < fireArray.length; x++) {
-                if (raceCar.rec.intersects(fireArray[x].rec)) {
+            for(int x = 0; x < woodstockArray.length; x++) {
+                if (snoopy.rec.intersects(woodstockArray[x].rec)) {
                     showWoodstock = false;
                 }
             }
