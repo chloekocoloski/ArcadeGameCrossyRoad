@@ -8,7 +8,7 @@ import java.awt.image.BufferStrategy;
 
 
 
-    public class CrossyRoad implements Runnable, KeyListener, MouseListener {
+    public class SnoopyGame implements Runnable, KeyListener, MouseListener {
 
         @Override
         public void keyTyped(KeyEvent e) {
@@ -80,32 +80,50 @@ import java.awt.image.BufferStrategy;
         public Image backgroundPic;
         public Image snoopyPic;
         private item snoopy;
+        public Image charliePic;
 
-        item[] woodstockArray =new item[10];
+        item[] woodstockArray =new item[5];
+        item[] charlieArray = new item [5];
+        
 
 
         public static void main(String[] args) {
-            CrossyRoad ex = new CrossyRoad();
+            SnoopyGame ex = new SnoopyGame();
             new Thread(ex).start();
+            System.out.println("Welcome to the SnoopyGame! Use the arrow keys to control Snoopy. Don't get hit by Woodstock! Collect all the Charlie Browns!");
 
         }
 
 
-        public CrossyRoad() {
+        public SnoopyGame() {
             setUpGraphics();
 
             backgroundPic = Toolkit.getDefaultToolkit().getImage("field.png");
             snoopyPic = Toolkit.getDefaultToolkit().getImage("snoopy.png");
             woodstockPic = Toolkit.getDefaultToolkit().getImage("woodstock.png");
+            charliePic = Toolkit.getDefaultToolkit().getImage("charlieBrown.png");
+            
             snoopy = new item (450,500);
+
 
 
 
             for(int x = 0; x < woodstockArray.length; x++) {
                     woodstockArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
-                    woodstockArray[x].dy = 0;
+                    woodstockArray[x].dy = (int) (Math.random()* 5);
+                    woodstockArray[x].dx = (int) (Math.random()* 5);
+
             }
+
+            for(int x = 0; x < charlieArray.length; x++){
+                charlieArray[x] = new item((int) (Math.random()* 900), (int)(Math.random()* 600));
+                charlieArray[x].dx = 0;
+                charlieArray[x].dy = 0;
+
+            }
+            
         }
+            
 
         public void run() {
             while (true) {
@@ -119,15 +137,20 @@ import java.awt.image.BufferStrategy;
         public void moveThings() {
             collisions();
             snoopy.bounce();
+
             for(int x = 0; x < woodstockArray.length; x++) {
                 woodstockArray[x].wrap();
             }
-
-
             for(int y = 0; y < woodstockArray.length; y++){
                woodstockArray[y].wrap();
-
             }
+            for(int x = 0; x < charlieArray.length; x++) {
+                charlieArray[x].bounce();
+            }
+            for(int y = 0; y < charlieArray.length; y++){
+                charlieArray[y].bounce();
+            }
+
 
         }
 
@@ -142,6 +165,18 @@ import java.awt.image.BufferStrategy;
                     woodstockArray[x].dx = 0;
                     woodstockArray[x].dy = 0;
                     woodstockArray[x].isAlive = false;
+
+
+                }
+            }
+
+            for(int x = 0; x < charlieArray.length; x++) {
+                if (snoopy.rec.intersects(charlieArray[x].rec) && snoopy.isAlive && charlieArray[x].isAlive) {
+                    snoopy.dx = snoopy.dx + 5;
+                    snoopy.dy = snoopy.dy + 5;
+                    charlieArray[x].dx = 5;
+                    charlieArray[x].dy = 5;
+                    charlieArray[x].isAlive = false;
 
 
                 }
@@ -181,7 +216,6 @@ import java.awt.image.BufferStrategy;
             System.out.println("DONE graphic setup");
 
         }
-        boolean showWoodstock = true;
 
 
         private void render() {
@@ -197,14 +231,21 @@ import java.awt.image.BufferStrategy;
                     g.drawImage(woodstockPic, woodstockArray[x].xpos, woodstockArray[x].ypos, woodstockArray[x].width, woodstockArray[x].height, null);
                 }
             }
+            for(int x = 0; x < charlieArray.length; x++) {
+                if (charlieArray[x].isAlive){
+                    g.drawImage(charliePic, charlieArray[x].xpos, charlieArray[x].ypos, charlieArray[x].width, charlieArray[x].height, null);
+                }
+            }
 
-//            for (int l = 0; l < woodstockArray.length; l++) {
-//                g.drawImage(woodstockPic, woodstockArray[l].xpos, woodstockArray[l].ypos, woodstockArray[l].width, woodstockArray[l].height, null);
-//            }
+//           
 
             for(int x = 0; x < woodstockArray.length; x++) {
                 if (snoopy.rec.intersects(woodstockArray[x].rec)) {
-                    showWoodstock = false;
+                }
+            }
+            for(int x = 0; x < charlieArray.length; x++) {
+                if (snoopy.rec.intersects(charlieArray[x].rec)) {
+                    charlieArray[x].bounce();
                 }
             }
 
